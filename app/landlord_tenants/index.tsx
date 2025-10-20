@@ -1,6 +1,6 @@
 // app/landlord_properties/index.tsx
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import { useState } from "react";
 import { FlatList, StyleSheet, Text, TextInput, View } from "react-native";
 import AddButton from "../../components/AddButton";
 import PropertyCard, { type TenantCardProps } from "../../components/TenantCard";
@@ -28,7 +28,7 @@ export default function LandlordPropertiesScreen() {
   const router = useRouter(); // ✅ move inside the component
   const [search, setSearch] = useState("");
     const goToAdd = () => {
-        router.push({pathname: "/landlord_properties/edit"});
+        router.push({pathname: "/landlord_tenants/details"});
         console.log("Navigating to add property screen");
     };
   const filteredData = DATA.filter((item) => {

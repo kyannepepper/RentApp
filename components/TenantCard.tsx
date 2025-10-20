@@ -1,17 +1,17 @@
 // components/TenantCard.tsx
 import { useRouter } from "expo-router";
 import { Mail, Pencil, Phone } from "lucide-react-native";
-import React, { useState } from "react";
+import { useState } from "react";
 
 import {
-    Image,
-    LayoutAnimation,
-    Platform,
-    Pressable,
-    StyleSheet,
-    Text,
-    UIManager,
-    View,
+  Image,
+  LayoutAnimation,
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  UIManager,
+  View,
 } from "react-native";
 
 // Enable LayoutAnimation on Android
@@ -60,16 +60,9 @@ export default function TenantCard({
   const goEdit = (e?: any) => {
     e?.stopPropagation?.();
     router.push({
-      pathname: "/landlord_tenants/edit",
+      pathname: "/landlord_tenants/details",
       params: {
-        id,
-        complex,
-        unit,
-        tenantName,
-        phone,
-        email,
-        leaseEnd,
-        rent: rentText ?? "",
+        id: id
       },
     });
   };

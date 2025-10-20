@@ -1,16 +1,16 @@
 // components/PropertyCard.tsx
 import { useRouter } from "expo-router";
 import { Bath, BedDouble, DollarSign, Pencil, Ruler } from "lucide-react-native";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
-    Image,
-    LayoutAnimation,
-    Platform,
-    Pressable,
-    StyleSheet,
-    Text,
-    UIManager,
-    View,
+  Image,
+  LayoutAnimation,
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  UIManager,
+  View,
 } from "react-native";
 
 // Enable LayoutAnimation on Android

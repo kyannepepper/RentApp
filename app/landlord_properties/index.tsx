@@ -1,6 +1,6 @@
 // app/landlord_properties/index.tsx
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import { useState } from "react";
 import { FlatList, StyleSheet, Text, TextInput, View } from "react-native";
 import AddButton from "../../components/AddButton";
 import PropertyCard, { type PropertyCardProps } from "../../components/PropertyCard";
