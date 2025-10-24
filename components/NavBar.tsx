@@ -1,11 +1,12 @@
 // components/NavBar.tsx
 import { usePathname, useRouter, type Href } from "expo-router";
-import { Building2, DollarSign, Settings, User, Wrench } from "lucide-react-native";
+import { Building2, CreditCard, Settings, User, Wrench } from "lucide-react-native";
 import React from "react";
 import { Platform, StyleSheet, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useUser } from "../contexts/UserContext";
 
-type TabName = "landlord_properties" | "finances" | "tenants" | "maintenance" | "settings";
+type TabName = "landlord_properties" | "pay_rent" | "tenants" | "maintenance" | "settings";
 
 const ACTIVE = "#6D46C9";
 const INACTIVE = "#70757c";
@@ -18,78 +19,156 @@ type Props = {
 export default function NavBar({ onPress, style }: Props) {
   const router = useRouter();
   const pathname = usePathname();
+  const { userRole } = useUser();
 
-  const routes = {
-    landlord_properties: "/landlord_properties",
-    finances: "/tenant_finances",
-    tenants: "/landlord_tenants",
-    maintenance: "/maintenance",
-    settings: "/settings",
-  } as const satisfies Record<TabName, Href>;
+  const landlordRoutes = {
+    landlord_properties: "/landlord_properties" as Href,
+    tenants: "/landlord_tenants" as Href,
+    maintenance: "/maintenance" as Href,
+    settings: "/" as Href,
+  };
+
+  const tenantRoutes = {
+    pay_rent: "/pay_rent" as Href,
+    maintenance: "/maintenance" as Href,
+    settings: "/" as Href,
+  };
 
   const go = (tab: TabName) => {
     if (onPress) return onPress(tab);
-    router.push(routes[tab]);
+    
+    if (userRole === 'landlord') {
+      router.replace(landlordRoutes[tab as keyof typeof landlordRoutes]);
+    } else {
+      router.replace(tenantRoutes[tab as keyof typeof tenantRoutes]);
+    }
   };
 
-  const isActive = (href: Href) =>
-    // treat subroutes like /landlord_properties/details as active, too
-    typeof href === "string" ? pathname?.startsWith(href) : false;
+  const isActive = (routePath: Href) => {
+  const pathString = typeof routePath === 'string' ? routePath : routePath.pathname;
+  const cleanPath = pathString === "/" ? "/" : pathString.replace(/^\/|\/$/g, ""); // trim slashes
+  
+  if (cleanPath === "/") {
+    return pathname === "/";
+  }
+  
+  return pathname?.includes(cleanPath) || false;
+};
+
+  const renderTabs = () => {
+    if (userRole === 'landlord') {
+      return (
+        <>
+          <TouchableOpacity
+            style={styles.tab}
+            activeOpacity={0.7}
+            onPress={() => go("landlord_properties")}
+            accessibilityRole="tab"
+            accessibilityState={{ selected: isActive(landlordRoutes.landlord_properties) }}
+          >
+            <Building2 
+              size={28} 
+              color={isActive(landlordRoutes.landlord_properties) ? ACTIVE : INACTIVE} 
+              strokeWidth={1.6} 
+            />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.tab}
+            activeOpacity={0.7}
+            onPress={() => go("tenants")}
+            accessibilityRole="tab"
+            accessibilityState={{ selected: isActive(landlordRoutes.tenants) }}
+          >
+            <User 
+              size={28} 
+              color={isActive(landlordRoutes.tenants) ? ACTIVE : INACTIVE} 
+              strokeWidth={1.6} 
+            />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.tab}
+            activeOpacity={0.7}
+            onPress={() => go("maintenance")}
+            accessibilityRole="tab"
+            accessibilityState={{ selected: isActive(landlordRoutes.maintenance) }}
+          >
+            <Wrench 
+              size={28} 
+              color={isActive(landlordRoutes.maintenance) ? ACTIVE : INACTIVE} 
+              strokeWidth={1.6} 
+            />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.tab}
+            activeOpacity={0.7}
+            onPress={() => go("settings")}
+            accessibilityRole="tab"
+            accessibilityState={{ selected: isActive(landlordRoutes.settings) }}
+          >
+            <Settings 
+              size={28} 
+              color={isActive(landlordRoutes.settings) ? ACTIVE : INACTIVE} 
+              strokeWidth={1.6} 
+            />
+          </TouchableOpacity>
+        </>
+      );
+    } else {
+      return (
+        <>
+          <TouchableOpacity
+            style={styles.tab}
+            activeOpacity={0.7}
+            onPress={() => go("pay_rent")}
+            accessibilityRole="tab"
+            accessibilityState={{ selected: isActive(tenantRoutes.pay_rent) }}
+          >
+            <CreditCard 
+              size={28} 
+              color={isActive(tenantRoutes.pay_rent) ? ACTIVE : INACTIVE} 
+              strokeWidth={1.6} 
+            />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.tab}
+            activeOpacity={0.7}
+            onPress={() => go("maintenance")}
+            accessibilityRole="tab"
+            accessibilityState={{ selected: isActive(tenantRoutes.maintenance) }}
+          >
+            <Wrench 
+              size={28} 
+              color={isActive(tenantRoutes.maintenance) ? ACTIVE : INACTIVE} 
+              strokeWidth={1.6} 
+            />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.tab}
+            activeOpacity={0.7}
+            onPress={() => go("settings")}
+            accessibilityRole="tab"
+            accessibilityState={{ selected: isActive(tenantRoutes.settings) }}
+          >
+            <Settings 
+              size={28} 
+              color={isActive(tenantRoutes.settings) ? ACTIVE : INACTIVE} 
+              strokeWidth={1.6} 
+            />
+          </TouchableOpacity>
+        </>
+      );
+    }
+  };
 
   return (
     <SafeAreaView style={[styles.wrapper, style]}>
-
       <View style={styles.pill}>
-
-        <TouchableOpacity
-          style={styles.tab}
-          activeOpacity={0.7}
-          onPress={() => go("landlord_properties")}
-          accessibilityRole="tab"
-          accessibilityState={{ selected: isActive(routes.landlord_properties) }}
-        >
-          <Building2 size={28} color={isActive(routes.landlord_properties) ? ACTIVE : INACTIVE} strokeWidth={1.6} />
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.tab}
-          activeOpacity={0.7}
-          onPress={() => go("finances")}
-          accessibilityRole="tab"
-          accessibilityState={{ selected: isActive(routes.finances) }}
-        >
-          <DollarSign size={28} color={isActive(routes.finances) ? ACTIVE : INACTIVE} strokeWidth={1.6} />
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.tab}
-          activeOpacity={0.7}
-          onPress={() => go("tenants")}
-          accessibilityRole="tab"
-          accessibilityState={{ selected: isActive(routes.tenants) }}
-        >
-          <User size={28} color={isActive(routes.tenants) ? ACTIVE : INACTIVE} strokeWidth={1.6} />
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.tab}
-          activeOpacity={0.7}
-          onPress={() => go("maintenance")}
-          accessibilityRole="tab"
-          accessibilityState={{ selected: isActive(routes.maintenance) }}
-        >
-          <Wrench size={28} color={isActive(routes.maintenance) ? ACTIVE : INACTIVE} strokeWidth={1.6} />
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.tab}
-          activeOpacity={0.7}
-          onPress={() => go("settings")}
-          accessibilityRole="tab"
-          accessibilityState={{ selected: isActive(routes.settings) }}
-        >
-          <Settings size={28} color={isActive(routes.settings) ? ACTIVE : INACTIVE} strokeWidth={1.6} />
-        </TouchableOpacity>
+        {renderTabs()}
       </View>
     </SafeAreaView>
   );

@@ -1,3 +1,23 @@
+# Photos:
+
+![Alt text](/assets/main_wireframe.jpg)
+![Alt text](/assets/second_wireframe.jpg)
+
+# Human Interface Guidelines
+
+## Feedback
+
+Feedback helps people know what’s happening, discover what they can do next, understand the results of actions, and avoid mistakes.
+
+In my app I intentionally focused on making sure there was good feedback everytime they went to submit something. It would have an error or a success sign. I also included haptics and sound for when the user hits the pay button to insure that the user knows their payment went through successfully.
+
+## Navigation - Tab bars
+
+A tab bar lets people navigate between top-level sections of your app like the Alarm, Stopwatch, and Timer tabs in the Clock app.
+
+In my app I included a tab bar navigation at the bottom of my app to help the user know which page they are on. It also helps them to easily navigate the app and move to a different page.
+
+
 # Welcome to your Expo app 👋
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).

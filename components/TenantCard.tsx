@@ -4,14 +4,14 @@ import { Mail, Pencil, Phone } from "lucide-react-native";
 import { useState } from "react";
 
 import {
-  Image,
-  LayoutAnimation,
-  Platform,
-  Pressable,
-  StyleSheet,
-  Text,
-  UIManager,
-  View,
+    Image,
+    LayoutAnimation,
+    Platform,
+    Pressable,
+    StyleSheet,
+    Text,
+    UIManager,
+    View,
 } from "react-native";
 
 // Enable LayoutAnimation on Android
@@ -60,7 +60,7 @@ export default function TenantCard({
   const goEdit = (e?: any) => {
     e?.stopPropagation?.();
     router.push({
-      pathname: "/landlord_tenants/details",
+      pathname: "/landlord_tenants_details",
       params: {
         id: id
       },

@@ -20,13 +20,19 @@ export default function AddButton({
   color = "#F7931E", // orange like your screenshot
 }: AddButtonProps) {
 
+  const handlePress = () => {
+    if (onPress) {
+      onPress();
+    }
+  };
     
   return (
     <View style={[styles.wrapper, style]}>
       <Pressable
-        onPress={onPress}
+        onPress={handlePress}
         accessibilityRole="button"
         accessibilityLabel="Add"
+        hitSlop={20}
         style={({ pressed }) => [
           styles.button,
           {
@@ -48,8 +54,15 @@ const styles = StyleSheet.create({
   // positioned to float above a bottom nav bar by default
   wrapper: {
     position: "absolute",
-    right: 24,
-    bottom: 130,
+    right: 20,
+    bottom: 160,
+    zIndex: 10000,
+    elevation: 10000, // For Android
+    // Make wrapper larger to ensure full touch area
+    width: 80,
+    height: 80,
+    justifyContent: "center",
+    alignItems: "center",
   },
   button: {
     alignItems: "center",

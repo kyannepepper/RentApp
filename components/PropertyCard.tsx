@@ -1,16 +1,16 @@
 // components/PropertyCard.tsx
 import { useRouter } from "expo-router";
-import { Bath, BedDouble, DollarSign, Pencil, Ruler } from "lucide-react-native";
-import { useEffect, useState } from "react";
+import { Mail, Pencil, Phone } from "lucide-react-native";
+import { useState } from "react";
 import {
-  Image,
-  LayoutAnimation,
-  Platform,
-  Pressable,
-  StyleSheet,
-  Text,
-  UIManager,
-  View,
+    Image,
+    LayoutAnimation,
+    Platform,
+    Pressable,
+    StyleSheet,
+    Text,
+    UIManager,
+    View,
 } from "react-native";
 
 // Enable LayoutAnimation on Android
@@ -18,66 +18,41 @@ if (Platform.OS === "android" && UIManager.setLayoutAnimationEnabledExperimental
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
-export type PropertyCardProps = {
+export interface PropertyCardProps {
   id: string;
-  imageUrl: string;
+  imageUrl?: string;
   complex: string;
-  property: string; // e.g. "Apt 101"
-  tenant?: string | null; // null/undefined => vacant
-  beds?: number | string;
-  baths?: number | string;
-  sqft?: number | string;
-  rent?: number | string; // number (1200) or "$1200/mo"
-  defaultExpanded?: boolean;
-  style?: object;
-};
+  address?: string;
+  tenantName?: string;
+  phone?: string;
+  email?: string;
+}
 
 export default function PropertyCard({
   id,
   imageUrl,
   complex,
-  property,
-  tenant,
-  beds,
-  baths,
-  sqft,
-  rent,
-  defaultExpanded = false,
-  style,
+  address,
+  tenantName,
+  phone,
+  email,
 }: PropertyCardProps) {
   const router = useRouter();
-  const [expanded, setExpanded] = useState(defaultExpanded);
-
-  useEffect(() => {
-    if (defaultExpanded) {
-      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    }
-  }, [defaultExpanded]);
+  const [expanded, setExpanded] = useState(false);
 
   const toggle = () => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     setExpanded((e) => !e);
   };
 
-  const occupied = Boolean(tenant);
-  const rentText =
-    typeof rent === "number" ? `$${rent.toLocaleString()}/mo` : rent ?? undefined;
+  const occupied = Boolean(tenantName);
 
   const goEdit = (e: any) => {
     // prevent the parent Pressable (card) from toggling
     e?.stopPropagation?.();
     router.push({
-      pathname: "/landlord_properties/edit",
-      params: {
-        id,
-        complex,
-        property,
-        tenant: tenant ?? "",
-        beds: beds?.toString() ?? "",
-        baths: baths?.toString() ?? "",
-        sqft: sqft?.toString() ?? "",
-        rent: rentText ?? "",
-      },
+      pathname: "/landlord_properties_details",
+      params: { id },
     });
   };
 
@@ -85,12 +60,15 @@ export default function PropertyCard({
     <Pressable
       onPress={toggle}
       android_ripple={{ color: "#eee" }}
-      style={[styles.card, style]}
+      style={styles.card}
       accessibilityRole="button"
-      accessibilityLabel={`${complex} ${property}. ${occupied ? `Tenant ${tenant}` : "Vacant"}. Tap for details`}
+      accessibilityLabel={`${complex}. ${occupied ? `Tenant ${tenantName}` : "Vacant"}. Tap for details`}
     >
       {/* Left: image */}
-      <Image source={{ uri: imageUrl }} style={styles.image} />
+      <Image 
+        source={{ uri: imageUrl || "https://picsum.photos/360/240" }} 
+        style={styles.image} 
+      />
 
       {/* Right: content */}
       <View style={styles.right}>
@@ -100,62 +78,56 @@ export default function PropertyCard({
             <Text style={styles.complex} numberOfLines={1}>
               {complex}
             </Text>
-            <Text style={styles.property} numberOfLines={1}>
-              {property}
-            </Text>
+            {address && (
+              <Text style={styles.address} numberOfLines={1}>
+                {address}
+              </Text>
+            )}
           </View>
 
-          {/* Use Pressable so we can stopPropagation */}
+          {/* Edit button */}
           <Pressable onPress={goEdit} style={styles.editBtn} hitSlop={8}>
             <Pencil size={14} color={PURPLE} strokeWidth={2} />
           </Pressable>
         </View>
 
-        {/* Tenant line */}
+        {/* Tenant status line */}
         <Text
           style={[styles.tenant, occupied ? styles.tenantOccupied : styles.tenantVacant]}
           numberOfLines={1}
         >
-          {occupied ? `Tenant: ${tenant}` : "Vacant"}
+          {occupied ? `Tenant: ${tenantName}` : "Vacant"}
         </Text>
 
-        {/* Expandable details */}
-        {expanded ? (
-          <View style={[styles.detailsRow, { marginTop: 8 }]}>
-            {beds !== undefined && beds !== "" && (
-              <View style={styles.detailPill}>
-                <BedDouble size={16} color="#58606a" strokeWidth={1.8} />
-                <Text style={styles.detailText}>{beds} bed</Text>
+        {/* Expandable tenant details */}
+        {expanded && occupied ? (
+          <View style={styles.detailsContainer}>
+            {phone && (
+              <View style={styles.detailRow}>
+                <Phone size={14} color="#58606a" strokeWidth={1.8} />
+                <Text style={styles.detailText}>{phone}</Text>
               </View>
             )}
-            {baths !== undefined && baths !== "" && (
-              <View style={styles.detailPill}>
-                <Bath size={16} color="#58606a" strokeWidth={1.8} />
-                <Text style={styles.detailText}>{baths} bath</Text>
-              </View>
-            )}
-            {sqft !== undefined && sqft !== "" && (
-              <View style={styles.detailPill}>
-                <Ruler size={16} color="#58606a" strokeWidth={1.8} />
-                <Text style={styles.detailText}>{sqft} sqft</Text>
-              </View>
-            )}
-            {rentText && (
-              <View style={styles.detailPill}>
-                <DollarSign size={16} color="#58606a" strokeWidth={1.8} />
-                <Text style={styles.detailText}>{rentText}</Text>
+            {email && (
+              <View style={styles.detailRow}>
+                <Mail size={14} color="#58606a" strokeWidth={1.8} />
+                <Text style={styles.detailText} numberOfLines={1}>
+                  {email}
+                </Text>
               </View>
             )}
           </View>
         ) : (
-          <Text style={styles.disclosure}>Tap to show details</Text>
+          <Text style={styles.disclosure}>
+            {occupied ? "Tap to show tenant details" : "Tap to add tenant"}
+          </Text>
         )}
       </View>
     </Pressable>
   );
 }
 
-const IMG_SIZE = 110; // controls the card height
+const IMG_SIZE = 110;
 const PURPLE = "#6D46C9";
 
 const styles = StyleSheet.create({
@@ -169,7 +141,7 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     shadowOffset: { width: 0, height: 4 },
     elevation: 3,
-    marginVertical: 8,
+    marginHorizontal: 16,
   },
   image: {
     width: IMG_SIZE,
@@ -191,9 +163,9 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#111827",
   },
-  property: {
-    fontSize: 14,
-    color: "#4b5563",
+  address: {
+    fontSize: 13,
+    color: "#6b7280",
     marginTop: 2,
   },
   editBtn: {
@@ -203,42 +175,38 @@ const styles = StyleSheet.create({
     margin: -8,
     marginTop: -30,
     borderRadius: 999,
-    backgroundColor: 'white',
-  },
-  editText: {
-    color: "#fff",
-    fontWeight: "700",
-    fontSize: 12,
-    letterSpacing: 0.2,
+    backgroundColor: "white",
   },
   tenant: {
     marginTop: 6,
     fontSize: 13,
   },
-  tenantOccupied: { color: "#1b7f53", fontWeight: "600" },
-  tenantVacant: { color: "#9f1d20", fontWeight: "600" },
-
-  detailsRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8,
+  tenantOccupied: { 
+    color: "#1b7f53", 
+    fontWeight: "600" 
   },
-  detailPill: {
+  tenantVacant: { 
+    color: "#9f1d20", 
+    fontWeight: "600" 
+  },
+  detailsContainer: {
+    marginTop: 8,
+    gap: 6,
+  },
+  detailRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 6,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 999,
-    backgroundColor: "#f3f4f6",
+    gap: 8,
   },
   detailText: {
     fontSize: 12,
     color: "#374151",
+    flex: 1,
   },
   disclosure: {
     marginTop: 8,
     fontSize: 12,
     color: "#6b7280",
+    fontStyle: "italic",
   },
 });
