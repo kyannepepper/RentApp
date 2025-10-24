@@ -1,7 +1,7 @@
 # Photos:
 
-![Alt text](/assets/main_wireframe.jpg)
-![Alt text](/assets/second_wireframe.jpg)
+![Alt text](./assets/main_wireframe.jpg)
+![Alt text](./assets/second_wireframe.jpg)
 
 # Human Interface Guidelines
 
